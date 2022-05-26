@@ -1,79 +1,180 @@
-import React, { useRef, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import './styles/App.css';
 import PostList from './components/PostList';
 import PostForm from './components/PostForm';
-import MySelect from './components/UI/select/MySelect';
-import MyInput from './components/UI/input/MyInput';
+import PostFilter from './components/PostFilter';
 
 
 
 
 
 
-function App() {
-  const [posts, setPosts] = useState([
-    { id: 1, title: 'Javascript', body: 'Description 4' },
-    { id: 2, title: 'Java', body: 'Description 3' },
-    { id: 3, title: 'Ruby', body: 'Description 2' },
-    { id: 4, title: 'Python', body: 'Description 1' },
-  ])
-   
-  const [selectedSort, setSelectedSort] = useState('')
+/*********************
+➝ Поиск. Фильтрация.
+➝ useMemo. Мемоизация. Кеширование
+ ********************/
 
-  const[searchQuery, setSearchQuery] = useState('')
+// import MySelect from './components/UI/select/MySelect';
+// import MyInput from './components/UI/input/MyInput';
 
-  const createPost = (newPost) => {
-    setPosts([...posts, newPost])
-  }
+// /*****Чистый результат функции под этой, проверка на длину PostList Вынесена в компонент******/
+// function App() {
+//   const [posts, setPosts] = useState([
+//     { id: 1, title: 'Javascript', body: 'Description 4' },
+//     { id: 2, title: 'Java', body: 'Description 3' },
+//     { id: 3, title: 'Ruby', body: 'Description 2' },
+//     { id: 4, title: 'Python', body: 'Description 1' },
+//   ])
 
-  //Получаем пост из дочернего компонента
-  const removePost = (post) => {
-    setPosts( posts.filter ( p => p.id !== post.id ))
-  }
+//   const [filter, setFilter] = useState({sort: '', query: ''})
 
-  const sortPosts = (sort) => {
-    setSelectedSort(sort)
-    setPosts([...posts].sort((a, b) => a[sort].localeCompare(b[sort])))
-  }
+//   const sortedPosts = useMemo(() => {
+//     if (filter.sort) {
+//       return [...posts].sort((a, b) => a[filter.sort].localeCompare(b[filter.sort]))
+//     }
+
+//     return posts;
+//   }, [filter.sort, posts])
+
+//   const sortedAndSearchedPosts = useMemo( () => {
+//     return sortedPosts.filter( post => post.title.toLowerCase().includes(filter.query))
+//   }, [filter.query, sortedPosts])
+
+//   const createPost = (newPost) => {
+//     setPosts([...posts, newPost])
+//   }
+
+//   const removePost = (post) => {
+//     setPosts( posts.filter ( p => p.id !== post.id ))
+//   }
+
   
-  return (
-    <div className='App'>
-      <PostForm create={createPost}/> 
+//   return (
+//     <div className='App'>
+//       <PostForm create={createPost}/> 
 
-      <hr style={{margin: '15px 0'}}/>
+//       <hr style={{margin: '15px 0'}}/>
 
-      <MyInput
-        value={searchQuery}
-        onChange={e => setSearchQuery(e.target.value)}
-        placeholder='Search'
-      />
+//       <PostFilter
+//         filter={filter}
+//         setFilter={setFilter}
+//       />
 
-      <div>
-        <MySelect
-          value={selectedSort}
-          onChange={sortPosts}
-          defaultValue='Сортировка по'
-          options={[
-            {value: 'title', name: 'По названию'},
-            {value: 'body', name: 'По описанию'}
-          ]}
+//      <PostList
+//             remove={removePost}
+//             posts={sortedAndSearchedPosts}
+//             title='Post List 1'
+//         />
+//     </div>
+//   )
+// }
 
-        />
-      </div>
 
-      {posts.length !== 0
-        ? <PostList
-            remove={removePost}
-            posts={posts}
-            title='Post List 1'
-        />
-        : <h1 style={{ textAlign: 'center' }}>
-            Posts not found
-        </h1>
-      }
-    </div>
-  )
-}
+// function App() {
+//   const [posts, setPosts] = useState([
+//     { id: 1, title: 'Javascript', body: 'Description 4' },
+//     { id: 2, title: 'Java', body: 'Description 3' },
+//     { id: 3, title: 'Ruby', body: 'Description 2' },
+//     { id: 4, title: 'Python', body: 'Description 1' },
+//   ])
+   
+//   // const [selectedSort, setSelectedSort] = useState('')
+//   // const[searchQuery, setSearchQuery] = useState('')
+
+//   const [filter, setFilter] = useState({sort: '', query: ''})
+
+//   // function getSortedPosts() {
+//   //   console.log('Otrabotala function SortPost!!')
+//   //   if (selectedSort) {
+//   //     return [...posts].sort((a, b) => a[selectedSort].localeCompare(b[selectedSort]))
+//   //   }
+
+//   //   return posts;
+//   // }
+
+//   const sortedPosts = useMemo(() => {
+//     // console.log('Otrabotala function SortPost!!')
+//     if (filter.sort) {
+//       return [...posts].sort((a, b) => a[filter.sort].localeCompare(b[filter.sort]))
+//     }
+
+//     return posts;
+//   }, [filter.sort, posts])
+
+//   const sortedAndSearchedPosts = useMemo( () => {
+//     return sortedPosts.filter( post => post.title.toLowerCase().includes(filter.query))
+//   }, [filter.query, sortedPosts])
+
+//   // const sortedPosts = useMemo(() => {
+//   //   // console.log('Otrabotala function SortPost!!')
+//   //   if (selectedSort) {
+//   //     return [...posts].sort((a, b) => a[selectedSort].localeCompare(b[selectedSort]))
+//   //   }
+
+//   //   return posts;
+//   // }, [selectedSort, posts])
+
+//   // const sortedAndSearchedPosts = useMemo( () => {
+//   //   return sortedPosts.filter( post => post.title.toLowerCase().includes(searchQuery))
+//   // }, [searchQuery, sortedPosts])
+
+//   const createPost = (newPost) => {
+//     setPosts([...posts, newPost])
+//   }
+
+//   //Получаем пост из дочернего компонента
+//   const removePost = (post) => {
+//     setPosts( posts.filter ( p => p.id !== post.id ))
+//   }
+
+//   // const sortPosts = (sort) => {
+//   //   setSelectedSort(sort)
+//   // }
+  
+//   return (
+//     <div className='App'>
+//       <PostForm create={createPost}/> 
+
+//       <hr style={{margin: '15px 0'}}/>
+
+//       <PostFilter
+//         filter={filter}
+//         setFilter={setFilter}
+//       />
+
+//       {/* <div>
+//         <MyInput
+//           value={searchQuery}
+//           onChange={e => setSearchQuery(e.target.value)}
+//           placeholder='Search'
+//         />
+
+//         <MySelect
+//           value={selectedSort}
+//           onChange={sortPosts}
+//           defaultValue='Сортировка по'
+//           options={[
+//             { value: 'title', name: 'По названию' },
+//             { value: 'body', name: 'По описанию' }
+//           ]}
+
+//         />
+//       </div> */}
+
+//       {/* {posts.length !== 0 */}
+//       { sortedAndSearchedPosts.length !== 0
+//         ? <PostList
+//             remove={removePost}
+//             posts={sortedAndSearchedPosts}
+//             title='Post List 1'
+//         />
+//         : <h1 style={{ textAlign: 'center' }}>
+//             Posts not found
+//         </h1>
+//       }
+//     </div>
+//   )
+// }
 
 
 /*************➝ Сортировка. Выпадающий список*****************/
