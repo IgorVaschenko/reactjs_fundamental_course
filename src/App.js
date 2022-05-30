@@ -1,11 +1,405 @@
-import React, { useMemo, useRef, useState } from 'react';
-import './styles/App.css';
-import PostList from './components/PostList';
-import PostForm from './components/PostForm';
-import PostFilter from './components/PostFilter';
+import { BrowserRouter, Route, Routes, Link, Redirect, Navigate } from 'react-router-dom'
+import Navbar from './components/UI/navbar/Navbar';
+import About from './pages/About';
+import NotFound from './pages/NotFound';
+import Posts from './pages/Posts';
+
+function App() {
+      return (
+            <BrowserRouter>
+
+                  <Navbar/>
+
+                  {/* <div className='navbar'>
+                        <div className='navbar__links'>
+                              <Link to='/about'>О сайте</Link>
+                              <Link to='/posts'>Посты</Link>
+                        </div>
+                  </div> */}
+
+
+                  <Routes>
+                        <Route path="/about" element={<About />} />
+                        <Route path="/posts" element={<Posts />} />
+                        {/* <Route path="*" element={<NotFound />} /> */}
+                        <Route path="*" element={<Navigate replace to='/about' />} />
+                  </Routes>
+            </BrowserRouter>
+      )
+}
 
 
 
+
+
+/********************
+ ➝ Кастомный хук useFetching(). Обработка ошибок
+ ➝ Постраничный вывод. Пагинация (pagination)
+ ➝ Обьяснение механизма изменения состояния
+ *******************/
+
+// import React, { useEffect, useMemo, useRef, useState } from 'react';
+// import './styles/App.css';
+// import PostList from './components/PostList';
+// import PostForm from './components/PostForm';
+// import PostFilter from './components/PostFilter';
+// import MyModal from './components/UI/myModal/MyModal';
+// import MyButton from './components/UI/button/MyButton';
+// import { usePosts } from './hooks/usePosts';
+// import PostService from './API/PostService';
+// import Loader from './components/UI/Loader/Loader';
+// import { useFetching } from './hooks/useFetching';
+// import { getPageCount, getPagesArray } from './utils/pages';
+// import Pagination from './components/UI/paginator/Pagination';
+
+
+/***Чистая с рефакторингом и вынесением в компоненты (Pagination)****/
+
+// function App() {
+//       const [posts, setPosts] = useState([])
+      
+      //       const [filter, setFilter] = useState({ sort: '', query: '' })
+      //       const [modal, setModal] = useState(false)
+//       const [totalCount, setTotalCount] = useState(0) 
+//       const [limit, setLimit] = useState(10) 
+//       const [page, setPage] = useState(1)
+//       const [totalPages, setTotalPages] = useState(0) 
+//       const sortedAndSearchedPosts = usePosts(posts, filter.sort, filter.query);
+           
+//       const [fetchPosts, isPostsLoading, postError] = useFetching(async (limit, page) => { // решение проблемы перехода на страницу без useEffect
+//             const response = await PostService.getAll(limit, page)
+//             setPosts(response.data)
+//             const totalCount = response.headers['x-total-count']
+//             setTotalPages(getPageCount(totalCount, limit))
+//       })
+
+//       useEffect(() => {
+//             fetchPosts(limit, page)
+//       }, [page])
+      
+//       const createPost = (newPost) => {
+//             setPosts([...posts, newPost])
+//             setModal(false)
+//       }
+    
+//       const removePost = (post) => {
+//         setPosts( posts.filter ( p => p.id !== post.id ))
+//       }
+    
+//       const changePage = (page) => {
+//             setPage(page)
+//             fetchPosts(limit, page)
+//       }
+      
+//       return (
+//             <div className='App'>
+   
+//                   <MyButton style={{marginTop: '30px'}} onClick={() => setModal(true)}>
+//                         Create Post
+//                   </MyButton>               
+    
+//                   <MyModal visible={modal} setVisible={setModal}>
+//                         <PostForm create={createPost} />
+//                   </MyModal>
+    
+//                   <hr style={{ margin: '15px 0' }} />
+    
+//                   <PostFilter
+//                         filter={filter}
+//                         setFilter={setFilter}
+//                   />
+
+//                   {postError && 
+//                         <h1>Произошла ошибка ${postError}</h1>}
+
+//                   {isPostsLoading
+//                         ? <div style={{
+//                               display: 'flex',
+//                               justifyContent: 'center',
+//                               marginTop: '50px'
+//                         }}>
+//                               <Loader />
+//                         </div>
+//                         : <PostList
+//                               remove={removePost}
+//                               posts={sortedAndSearchedPosts}
+//                               title='Post List 1'
+//                         />
+//                   }
+
+//                   <Pagination
+//                         page={page}
+//                         changePage={changePage}
+//                         totalPages={totalPages}
+//                   />
+
+//             </div>
+//       )
+// }
+
+
+// function App() {
+//       const [posts, setPosts] = useState([])
+
+//       const [filter, setFilter] = useState({ sort: '', query: '' })
+//       const [modal, setModal] = useState(false)
+//       const [totalCount, setTotalCount] = useState(0) //Состояние общего количества постов
+//       const [limit, setLimit] = useState(10) //Лимит постов
+//       const [page, setPage] = useState(1) //номера страниц
+//       const [totalPages, setTotalPages] = useState(0) 
+//       const sortedAndSearchedPosts = usePosts(posts, filter.sort, filter.query);
+     
+//       let pagesArray = getPagesArray(totalPages)
+//       // let pagesArray = []
+//       // for( let i = 0; i <totalPages; i++) {
+//       //       pagesArray.push(i+1)
+//       // }      
+//       // console.log([pagesArray])
+      
+//       const [fetchPosts, isPostsLoading, postError] = useFetching(async (limit, page) => { // решение проблемы перехода на страницу без useEffect
+//             const response = await PostService.getAll(limit, page)
+//             setPosts(response.data)
+//             const totalCount = response.headers['x-total-count']
+//             setTotalPages(getPageCount(totalCount, limit))
+//       })
+
+//       // const [fetchPosts, isPostsLoading, postError] = useFetching(async () => {
+//       //       const response = await PostService.getAll(limit, page)
+//       //       setPosts(response.data)
+//       //       const totalCount = response.headers['x-total-count']
+//       //       setTotalPages(getPageCount(totalCount, limit))
+//       //       // const posts = await PostService.getAll()
+//       //       // setPosts(posts)
+//       // })
+
+//       // console.log(totalPages)
+
+//       useEffect(() => {
+//             fetchPosts(limit, page)
+//             // fetchPosts()
+//       // }, [page])
+//       }, [page])
+      
+//       const createPost = (newPost) => {
+//             setPosts([...posts, newPost])
+//             setModal(false)
+//       }
+    
+//       const removePost = (post) => {
+//         setPosts( posts.filter ( p => p.id !== post.id ))
+//       }
+    
+//       const changePage = (page) => {
+//             setPage(page)
+//             // fetchPosts()
+//             fetchPosts(limit, page)
+//       }
+      
+//       return (
+//             <div className='App'>
+   
+//                   <MyButton style={{marginTop: '30px'}} onClick={() => setModal(true)}>
+//                         Create Post
+//                   </MyButton>               
+    
+//                   <MyModal visible={modal} setVisible={setModal}>
+//                         <PostForm create={createPost} />
+//                   </MyModal>
+    
+//                   <hr style={{ margin: '15px 0' }} />
+    
+//                   <PostFilter
+//                         filter={filter}
+//                         setFilter={setFilter}
+//                   />
+
+//                   {postError && 
+//                         <h1>Произошла ошибка ${postError}</h1>}
+
+//                   {isPostsLoading
+//                         ? <div style={{
+//                               display: 'flex',
+//                               justifyContent: 'center',
+//                               marginTop: '50px'
+//                         }}>
+//                               <Loader />
+//                         </div>
+//                         : <PostList
+//                               remove={removePost}
+//                               posts={sortedAndSearchedPosts}
+//                               title='Post List 1'
+//                         />
+//                   }
+
+//                   <div className='page__wrapper'>
+//                         {pagesArray.map(p =>
+//                               <span
+//                                     onClick={() => changePage(p)}
+//                                     key={p}
+//                                     className={page === p ? 'page page__current' : 'page'}
+//                               >
+//                                     {p}
+//                               </span>
+//                         )}
+//                   </div>
+
+//             </div>
+//       )
+// }
+
+
+/********************
+ ➝ Декомпозиция. Кастомные хуки
+ ➝ Работа с сервером. Axios
+ ➝ Жизненный цикл компонента. useEffect
+ ➝ API. PostService
+ ➝ Индикация загрузки данных с сервера
+ ➝ Компонент Loader. Анимации
+ *******************/
+
+// import axios from 'axios';
+
+// function App() {
+//       const [posts, setPosts] = useState([])
+    
+//       const [filter, setFilter] = useState({sort: '', query: ''})
+//       const [modal, setModal] = useState(false)      
+//       const sortedAndSearchedPosts = usePosts(posts, filter.sort, filter.query);
+//       const [isPostsLoading, setIsPostsLoading] = useState(false)
+
+//       useEffect( () => {
+//             fetchPosts()
+//       }, [])
+    
+//       const createPost = (newPost) => {
+//         setPosts([...posts, newPost])
+//         setModal(false)
+//       }
+
+//       async function fetchPosts() {
+//             setIsPostsLoading(true)
+
+//             setTimeout( async () => {
+//                   const posts = await PostService.getAll()
+//                   setPosts(posts)
+//                   // const response = await axios.get('https://jsonplaceholder.typicode.com/posts')
+//                   // setPosts(response.data)
+//                   setIsPostsLoading(false)
+
+//             }, 1000)
+//       }
+
+    
+//       const removePost = (post) => {
+//         setPosts( posts.filter ( p => p.id !== post.id ))
+//       }
+    
+      
+//       return (
+//             <div className='App'>
+
+//                   <button onClick={fetchPosts}>Get Posts</button>
+    
+//                   <MyButton style={{marginTop: '30px'}} onClick={() => setModal(true)}>
+//                         Create Post
+//                   </MyButton>               
+    
+//                   <MyModal visible={modal} setVisible={setModal}>
+//                         <PostForm create={createPost} />
+//                   </MyModal>
+    
+//                   <hr style={{ margin: '15px 0' }} />
+    
+//                   <PostFilter
+//                         filter={filter}
+//                         setFilter={setFilter}
+//                   />
+
+//                   {isPostsLoading
+//                         ? <div style={{
+//                               display: 'flex',
+//                               justifyContent: 'center',
+//                               marginTop: '50px'
+//                         }}>
+//                               <Loader />
+//                         </div>
+//                         : <PostList
+//                               remove={removePost}
+//                               posts={sortedAndSearchedPosts}
+//                               title='Post List 1'
+//                         />
+//                   }
+//             </div>
+//       )
+//     }
+
+
+
+/********************
+➝ Модальное окно. Переиспользуемый UI компонент
+➝ Анимации. React transition group
+ *******************/
+
+// function App() {
+//   const [posts, setPosts] = useState([
+//     { id: 1, title: 'Javascript', body: 'Description 4' },
+//     { id: 2, title: 'Java', body: 'Description 3' },
+//     { id: 3, title: 'Ruby', body: 'Description 2' },
+//     { id: 4, title: 'Python', body: 'Description 1' },
+//   ])
+
+//   const [filter, setFilter] = useState({sort: '', query: ''})
+
+//   const [modal, setModal] = useState(false)
+
+//   const sortedPosts = useMemo(() => {
+//     if (filter.sort) {
+//       return [...posts].sort((a, b) => a[filter.sort].localeCompare(b[filter.sort]))
+//     }
+
+//     return posts;
+//   }, [filter.sort, posts])
+
+//   const sortedAndSearchedPosts = useMemo( () => {
+//     return sortedPosts.filter( post => post.title.toLowerCase().includes(filter.query))
+//   }, [filter.query, sortedPosts])
+
+//   const createPost = (newPost) => {
+//     setPosts([...posts, newPost])
+//     setModal(false)
+//   }
+
+//   const removePost = (post) => {
+//     setPosts( posts.filter ( p => p.id !== post.id ))
+//   }
+
+  
+//   return (
+//         <div className='App'>
+
+//               <MyButton style={{marginTop: '30px'}} onClick={() => setModal(true)}>
+//                     Create Post
+//               </MyButton>               
+
+//               <MyModal visible={modal} setVisible={setModal}>
+//                     <PostForm create={createPost} />
+//               </MyModal>
+
+//               <hr style={{ margin: '15px 0' }} />
+
+//               <PostFilter
+//                     filter={filter}
+//                     setFilter={setFilter}
+//               />
+
+//               <PostList
+//                     remove={removePost}
+//                     posts={sortedAndSearchedPosts}
+//                     title='Post List 1'
+//               />
+//         </div>
+//   )
+// }
 
 
 
