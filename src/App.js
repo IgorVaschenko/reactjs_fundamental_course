@@ -1,32 +1,79 @@
 import { BrowserRouter, Route, Routes, Link, Redirect, Navigate } from 'react-router-dom'
+import AppRouter from './components/AppRouter';
 import Navbar from './components/UI/navbar/Navbar';
 import About from './pages/About';
 import NotFound from './pages/NotFound';
 import Posts from './pages/Posts';
+import { AuthContext } from './context';
+import { useEffect, useState } from 'react';
+
 
 function App() {
+
+      const [isAuth, setIsAuth] = useState(false)
+      const [isLoading, setLoading] = useState(true)
+
+      useEffect( () => {
+            if( localStorage.getItem('auth') ) {
+                  setIsAuth(true)
+            } else {
+                  setIsAuth(false)
+            }
+            setLoading(false)
+      },[])
+
       return (
-            <BrowserRouter>
-
-                  <Navbar/>
-
-                  {/* <div className='navbar'>
-                        <div className='navbar__links'>
-                              <Link to='/about'>О сайте</Link>
-                              <Link to='/posts'>Посты</Link>
-                        </div>
-                  </div> */}
-
-
-                  <Routes>
-                        <Route path="/about" element={<About />} />
-                        <Route path="/posts" element={<Posts />} />
-                        {/* <Route path="*" element={<NotFound />} /> */}
-                        <Route path="*" element={<Navigate replace to='/about' />} />
-                  </Routes>
-            </BrowserRouter>
+            <AuthContext.Provider value={{
+                  isAuth,
+                  setIsAuth,
+                  isLoading,
+            }}>
+                  <BrowserRouter>
+                        <Navbar />
+                        <AppRouter />
+                  </BrowserRouter>
+            </AuthContext.Provider>
       )
 }
+
+
+
+
+/********************
+➝React router. Постраничная навигация. BrowserRouter, Route, Switch, Redirect(чуть изменилось после обновления версии реакта)
+➝ Динамическая навигация. useHistory, useParams
+➝ Загрузка комментариев к посту
+➝ Улучшаем навигацию. Приватные и публичные маршруты
+ *******************/
+
+
+// function App() {
+//       return (
+//             <BrowserRouter>
+
+//                   <Navbar/>
+
+//                   <AppRouter/>
+
+//                   {/* <div className='navbar'>
+//                         <div className='navbar__links'>
+//                               <Link to='/about'>О сайте</Link>
+//                               <Link to='/posts'>Посты</Link>
+//                         </div>
+//                   </div> */}
+
+
+//                   {/* <Routes>
+//                         <Route path="/about" element={<About />} />
+//                         <Route path="/posts" element={<Posts />} />
+//                         {/* <Route path="*" element={<NotFound />} /> */}
+//                   {/*      <Route path="*" element={<Navigate replace to='/about' />} />
+//                   </Routes> */}
+
+
+//             </BrowserRouter>
+//       )
+// }
 
 
 
